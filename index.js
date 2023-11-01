@@ -5,17 +5,13 @@ let dragged;
 const response = await fetch('settings.json');
 const events_raw = await response.json();
 events_raw.unshift('None');
-console.log('events_raw', events_raw);
 const events = events_raw.map((event, id) => ({ id: id, name: event }));
-console.log('events', events);
 
 document.querySelector('#bOpen').onclick = () => {
 	domtoimage
 		.toBlob(document.querySelector('.bingo'))
 		.then(function (blob) {
-			console.log(blob);
 			const blobUrl = URL.createObjectURL(blob);
-			console.log(blobUrl);
 			window.open(blobUrl, '_blank');
 			window.URL.revokeObjectURL(blobUrl);
 		})
@@ -28,9 +24,7 @@ document.querySelector('#bDownload').onclick = () => {
 	domtoimage
 		.toBlob(document.querySelector('.bingo'))
 		.then(function (blob) {
-			console.log(blob);
 			const blobUrl = URL.createObjectURL(blob);
-			console.log(blobUrl);
 			const link = document.createElement('a');
 			link.href = blobUrl;
 			link.download = 'bingo.png';
@@ -43,6 +37,7 @@ document.querySelector('#bDownload').onclick = () => {
 };
 
 const cells = document.querySelectorAll('.cell');
+let last_click = Date.now();
 for (let index = 0; index < cells.length; index++) {
 	const cell = cells[index];
 	cell.draggable = true;
@@ -58,13 +53,19 @@ for (let index = 0; index < cells.length; index++) {
 		dragged = null;
 	});
 
-	cell.addEventListener('click', () => toggleCell(index));
+	cell.addEventListener('click', () => {
+		const time_now = Date.now();
+		if (time_now - last_click < 100) return;
+		last_click = time_now;
+		toggleCell(index);
+	});
 }
 
 const selector = document.querySelector('#selector');
 for (const event of events) {
 	let div = document.createElement('div');
 	div.textContent = event.name;
+	div.title = event.name;
 	div.draggable = true;
 	div.addEventListener('dragstart', () => (dragged = event));
 	selector.append(div);
@@ -175,7 +176,6 @@ function importSetting(setting, events) {
 }
 
 function updateSetting() {
-	console.log('updateSetting');
 	let setting = '';
 	for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
 		if (i > 0) setting += ';';
@@ -186,7 +186,6 @@ function updateSetting() {
 }
 
 function editCell(index, event) {
-	console.log(event, event.checked);
 	const cell = cells[index];
 
 	if (event.div.classList.contains('used')) {

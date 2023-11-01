@@ -39,13 +39,6 @@ button {
 	padding: revert;
 }
 
-html,
-body {
-	max-width: 100vw;
-	overflow-x: hidden;
-	height: 100vh;
-}
-
 body {
 	color: rgb(var(--text-rgb));
 	background: var(--background-rgb);
@@ -169,7 +162,8 @@ app {
 	background: var(--background-main-rgb);
 	border: 0.25rem solid var(--border-main-rgb);
 	border-radius: 0.5rem;
-	max-height: 669px;
+	max-height: 680px;
+	min-width: 200px;
 	overflow-y: auto;
 	overflow-x: auto;
 }
